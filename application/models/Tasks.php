@@ -1,5 +1,5 @@
 <?php
-
+include("Entity.php");
 class Tasks extends CSV_Model {
 
         public function __construct()
@@ -29,6 +29,40 @@ class Tasks extends CSV_Model {
 
             return $converted;
         }
+        // provide form validation rules
+        public function rules()
+        {
+            $config = array(
+                ['field' => 'task', 'label' => 'TODO task', 'rules' => 'alpha_numeric_spaces|max_length[64]'],
+                ['field' => 'priority', 'label' => 'Priority', 'rules' => 'integer|less_than[4]'],
+                ['field' => 'size', 'label' => 'Task size', 'rules' => 'integer|less_than[4]'],
+                ['field' => 'group', 'label' => 'Task group', 'rules' => 'integer|less_than[5]'],
+            );
+            return $config;
+        }
+
+        // gets all tasks that are completed
+        public function getCompletedTasks() {
+            // extract the done tasks
+            foreach ($this->all() as $task)
+            {
+                if ($task->status == 2)
+                    $done[] = $task;
+            }
+            return $done;
+        }
+
+        // gets all tasks that are uncompleted
+        public function getUncompletedTasks() {
+            // extract the undone tasks
+            foreach ($this->all() as $task)
+            {
+                if ($task->status != 2)
+                    $undone[] = $task;
+            }
+            return $undone;
+        }
+
 }
 // return -1, 0, or 1 of $a's category name is earlier, equal to, or later than $b's
 function orderByCategory($a, $b)
